@@ -99,7 +99,10 @@ bool rgb_matrix_indicators_user(void) {
   if (rawhid_state.rgb_control) {
       return false;
   }
-    if (keyboard_config.disable_layer_led) { return false; }
+  if (is_swap_hands_on()) {
+      rgb_matrix_set_color_all(255, 255, 255);
+  }
+  if (keyboard_config.disable_layer_led) { return false; }
   switch (biton32(layer_state)) {
     case 1:
       set_layer_color(1);
