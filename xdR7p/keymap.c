@@ -87,7 +87,7 @@ void set_layer_color(int layer) {
       .v = pgm_read_byte(&ledmap[layer][i][2]),
     };
     if (!hsv.h && !hsv.s && !hsv.v) {
-        rgb_matrix_set_color( i, 0, 0, 0 );
+        // rgb_matrix_set_color( i, 0, 0, 0 );
     } else {
         RGB rgb = hsv_to_rgb_with_value(hsv);
         rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
