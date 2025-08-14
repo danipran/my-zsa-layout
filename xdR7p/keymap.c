@@ -105,6 +105,10 @@ bool rgb_matrix_indicators_user(void) {
       return false;
   }
   if (keyboard_config.disable_layer_led) { return false; }
+  if (is_swap_hands_on()) {
+      RGB rgb = hsv_to_rgb_with_value(HSV_WHITE);
+      rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
+  }
   switch (biton32(layer_state)) {
     case 1:
       set_layer_color(1);
