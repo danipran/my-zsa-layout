@@ -79,6 +79,28 @@ const uint8_t PROGMEM ledmap[][RGB_MATRIX_LED_COUNT][3] = {
 
 };
 
+// I suppose you could replace this with an offset, but too lazy to do that atm.
+const uint8_t PROGMEM hand_swap_ledmap[RGB_MATRIX_LED_COUNT] = {
+    /* Left hand, starting from left column */
+    36, 37, 38, 39, 40,
+    41, 42, 43, 44, 45,
+    46, 47, 48, 49, 50,
+    51, 52, 53, 54, 55,
+    56, 57, 58, 59, 60,
+    61, 62, 63, 64,
+    65, 66, 67,
+    68, 69, 70, 71,
+    /* Right hand, starting from right column */
+    0, 1, 2, 3, 4,
+    5, 6, 7, 8, 9,
+    10, 11, 12, 13, 14,
+    15, 16, 17, 18, 19,
+    20, 21, 22, 23, 24,
+    25, 26, 27, 28,
+    29, 30, 31, 
+    32, 33, 34, 35
+};
+
 void set_layer_color(int layer) {
   bool swap_hands = is_swap_hands_on();
   for (int i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
@@ -92,7 +114,7 @@ void set_layer_color(int layer) {
     } else {
         RGB rgb = hsv_to_rgb_with_value(hsv);
         if (swap_hands) {
-            rgb_matrix_set_color(RGB_MATRIX_LED_COUNT - 1 - i, rgb.r, rgb.g, rgb.b);
+            rgb_matrix_set_color(pgm_read_byte(&hand_swap_ledmap[i]), rgb.r, rgb.g, rgb.b);
         } else {
             rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
         }
