@@ -80,7 +80,7 @@ const uint8_t PROGMEM ledmap[][RGB_MATRIX_LED_COUNT][3] = {
 };
 
 void set_layer_color(int layer) {
-  bool swap_hands = swap_hands_on();
+  bool swap_hands = is_swap_hands_on();
   for (int i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
     HSV hsv = {
       .h = pgm_read_byte(&ledmap[layer][i][0]),
@@ -106,7 +106,7 @@ bool rgb_matrix_indicators_user(void) {
   }
   if (keyboard_config.disable_layer_led) { return false; }
   if (is_swap_hands_on()) {
-      RGB rgb = hsv_to_rgb_with_value(HSV_WHITE);
+      RGB rgb = hsv_to_rgb_with_value((HSV){HSV_WHITE});
       rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
   }
   switch (biton32(layer_state)) {
