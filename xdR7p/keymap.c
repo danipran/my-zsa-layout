@@ -80,6 +80,7 @@ const uint8_t PROGMEM ledmap[][RGB_MATRIX_LED_COUNT][3] = {
 };
 
 void set_layer_color(int layer) {
+  bool swap_hands = swap_hands_on();
   for (int i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
     HSV hsv = {
       .h = pgm_read_byte(&ledmap[layer][i][0]),
@@ -90,7 +91,11 @@ void set_layer_color(int layer) {
         // rgb_matrix_set_color( i, 0, 0, 0 );
     } else {
         RGB rgb = hsv_to_rgb_with_value(hsv);
-        rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
+        if (swap_hands) {
+            rgb_matrix_set_color(RGB_MATRIX_LED_COUNT - 1 - i, rgb.r, rgb.g, rgb.b);
+        } else {
+            rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
+        }
     }
   }
 }
