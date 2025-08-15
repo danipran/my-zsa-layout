@@ -61,6 +61,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 
 extern rgb_config_t rgb_matrix_config;
+uint8_t rgb_original_hue = RGB_MATRIX_DEFAULT_HUE;
 
 RGB hsv_to_rgb_with_value(HSV hsv) {
   RGB rgb = hsv_to_rgb( hsv );
@@ -70,6 +71,7 @@ RGB hsv_to_rgb_with_value(HSV hsv) {
 
 void keyboard_post_init_user(void) {
   rgb_matrix_enable();
+  rgb_original_hue = rgb_matrix_config.hsv.h;
 }
 
 const uint8_t PROGMEM ledmap[][RGB_MATRIX_LED_COUNT][3] = {
@@ -127,10 +129,7 @@ bool rgb_matrix_indicators_user(void) {
       return false;
   }
   if (keyboard_config.disable_layer_led) { return false; }
-  if (is_swap_hands_on()) {
-      RGB rgb = hsv_to_rgb_with_value((HSV){HSV_WHITE});
-      rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
-  }
+
   switch (biton32(layer_state)) {
     case 1:
       set_layer_color(1);
@@ -147,6 +146,13 @@ bool rgb_matrix_indicators_user(void) {
   return true;
 }
 
+void housekeeping_task_user() {
+  if (is_swap_hands_on()) {
+    rgb_matrix_sethsv_noeeprom(rgb_original_hue + 127, rgb_matrix_config.hsv.s, rgb_matrix_config.hsv.v);
+  } else {
+    rgb_matrix_sethsv_noeeprom(rgb_original_hue, rgb_matrix_config.hsv.s, rgb_matrix_config.hsv.v);
+  }
+}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
