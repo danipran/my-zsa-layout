@@ -61,6 +61,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 
 extern rgb_config_t rgb_matrix_config;
+uint8_t rgb_original_hue = rgb_matrix_config.hsv.h;
 
 RGB hsv_to_rgb_with_value(HSV hsv) {
   RGB rgb = hsv_to_rgb( hsv );
@@ -127,10 +128,9 @@ bool rgb_matrix_indicators_user(void) {
       return false;
   }
   if (keyboard_config.disable_layer_led) { return false; }
-  if (is_swap_hands_on()) {
-      RGB rgb = hsv_to_rgb_with_value((HSV){HSV_WHITE});
-      rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
-  }
+  
+  rgb_matrix_config.hsv.h = rgb_original_hue;
+
   switch (biton32(layer_state)) {
     case 1:
       set_layer_color(1);
@@ -145,6 +145,18 @@ bool rgb_matrix_indicators_user(void) {
   }
 
   return true;
+}
+
+bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (rawhid_state.rgb_control) {
+      return false;
+    }
+    if (keyboard_config.disable_layer_led) { return false; }
+    rgb_original_hue = rgb_matrix_config.hsv.h;
+    if (is_swap_hands_on()) {
+        rgb_matrix_config.hsv.h = rgb_original_hue + 127;
+    }
+    return true;
 }
 
 
