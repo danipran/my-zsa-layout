@@ -61,6 +61,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 
 extern rgb_config_t rgb_matrix_config;
+uint8_t rgb_original_value = rgb_matrix_config.hsv.v;
 
 RGB hsv_to_rgb_with_value(HSV hsv) {
   RGB rgb = hsv_to_rgb( hsv );
@@ -127,6 +128,7 @@ bool rgb_matrix_indicators_user(void) {
       return false;
   }
   if (keyboard_config.disable_layer_led) { return false; }
+  rgb_matrix_config.hsv.v = rgb_original_value;
   if (is_swap_hands_on()) {
       RGB rgb = hsv_to_rgb_with_value((HSV){HSV_WHITE});
       rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
@@ -147,6 +149,18 @@ bool rgb_matrix_indicators_user(void) {
   return true;
 }
 
+bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (rawhid_state.rgb_control) {
+      return false;
+    }
+    if (keyboard_config.disable_layer_led) { return false; }
+    rgb_original_value = rgb_matrix_config.hsv.v;
+    uint8_t current_layer = get_highest_layer(layer_state);
+    if (current_layer != 0) {
+        rgb_matrix_config.hsv.v = rgb_matrix_config.hsv.v / 4;
+    }
+    return true;
+}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
